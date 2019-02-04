@@ -100,8 +100,6 @@ var FraGL = function () {
             var nw = this._nextPow2(w);
             var nh = this._nextPow2(h);
 
-            console.log(nw, nh);
-
             if (nw == w && nh == h) return image;
 
             if (!this._imageCanvas) {
