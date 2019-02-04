@@ -94,8 +94,6 @@ class FraGL{
         const nw = this._nextPow2(w);
         const nh = this._nextPow2(h);
 
-        console.log(nw, nh);
-
         if(nw == w && nh == h) return image;
 
         if(!this._imageCanvas) {
