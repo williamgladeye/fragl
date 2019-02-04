@@ -1,9 +1,9 @@
 {
   "name": "fragl",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gladeye/fragl"
+    "url": "https://github.com/williamgladeye/fragl"
   },
   "main": "dist/fragl.cjs.js",
   "module": "dist/fragl.esm.js",

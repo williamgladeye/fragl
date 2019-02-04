@@ -78,11 +78,54 @@ var FraGL = function () {
             return shader;
         }
     }, {
+        key: '_nextPow2',
+        value: function _nextPow2(val) {
+            var v = val;
+            v--;
+            v |= v >> 1;
+            v |= v >> 2;
+            v |= v >> 4;
+            v |= v >> 8;
+            v |= v >> 16;
+            v++;
+            return v;
+        }
+    }, {
+        key: '_checkSize',
+        value: function _checkSize(image) {
+            var w = image.naturalWidth,
+                h = image.naturalHeight;
+
+
+            var nw = this._nextPow2(w);
+            var nh = this._nextPow2(h);
+
+            console.log(nw, nh);
+
+            if (nw == w && nh == h) return image;
+
+            if (!this._imageCanvas) {
+                this._imageCanvas = document.createElement('canvas');
+                this._imageCtx = this._imageCanvas.getContext('2d');
+            }
+
+            this._imageCanvas.width = nw;
+            this._imageCanvas.height = nh;
+
+            this._imageCtx.drawImage(image, 0, 0, nw, nh);
+
+            image.src = this._imageCanvas.toDataURL();
+
+            return image;
+        }
+    }, {
         key: '_loadImage',
         value: function _loadImage(src) {
+            var _scope = this;
             return new Promise(function (resolve) {
                 var image = new Image();
                 image.addEventListener('load', function () {
+                    image = _scope._checkSize(image);
                     resolve(image);
                 });
                 image.src = src;
@@ -337,7 +380,7 @@ var FraGL = function () {
                 gl.uniform4iv(location, v);
             };
             if (type === gl.BOOL) return function (v) {
-                gl.uniform1iv(location, v);
+                gl.uniform1iv(location, [v]);
             };
             if (type === gl.BOOL_VEC2) return function (v) {
                 gl.uniform2iv(location, v);
@@ -445,6 +488,8 @@ var _initialiseProps = function _initialiseProps() {
     this._tUnit = 0;
     this._imageLoadColor = [255, 150, 150, 255];
     this._clearColor = [0, 0, 0, 0];
+    this._imageCanvas = null;
+    this._imageCtx = null;
     this.trasparent = true;
     this.premultipliedAlpha = false;
     this.antialias = false;

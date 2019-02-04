@@ -10,6 +10,8 @@ class FraGL{
     _tUnit = 0;
     _imageLoadColor = [255, 150, 150, 255];
     _clearColor = [0,0,0,0];
+    _imageCanvas = null;
+    _imageCtx = null;
     trasparent = true;
     premultipliedAlpha = false;
     antialias = false;
@@ -73,10 +75,50 @@ class FraGL{
         return shader;
     }
 
+
+    _nextPow2(val){
+        let v = val;
+        v--;
+        v |= v >> 1;
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+        v++;
+        return v;
+    }
+
+    _checkSize(image){
+        const { naturalWidth:w, naturalHeight:h } = image;
+
+        const nw = this._nextPow2(w);
+        const nh = this._nextPow2(h);
+
+        console.log(nw, nh);
+
+        if(nw == w && nh == h) return image;
+
+        if(!this._imageCanvas) {
+            this._imageCanvas = document.createElement('canvas');
+            this._imageCtx = this._imageCanvas.getContext('2d');
+        }
+
+        this._imageCanvas.width = nw;
+        this._imageCanvas.height = nh;
+
+        this._imageCtx.drawImage(image, 0,0,nw, nh);
+
+        image.src = this._imageCanvas.toDataURL();
+
+        return image;
+    }
+
     _loadImage(src){
+        const _scope = this;
         return new Promise( resolve =>{
-            const image = new Image();
+            let image = new Image();
             image.addEventListener('load', function(){
+                image = _scope._checkSize(image);
                 resolve(image);
             })
             image.src = src;
