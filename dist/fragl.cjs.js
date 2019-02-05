@@ -33,8 +33,12 @@ var FraGL = function () {
 
 
         gl.clearColor.apply(gl, _toConsumableArray(this._clearColor));
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+        this.clear();
+
         gl.enable(gl.BLEND);
+        gl.colorMask(1, 1, 1, 1);
+        gl.blendFunc(gl[this.blending.src], gl[this.blending.dst]);
     }
 
     _createClass(FraGL, [{
@@ -53,6 +57,8 @@ var FraGL = function () {
             if (args.premultipliedAlpha) this.premultipliedAlpha = args.premultipliedAlpha;
             if (args.antialias) this.antialias = args.antialias;
             if (args.depth) this.depth = args.depth;
+            if (args.blending && args.blending.src) this.blending.src = args.blending.src;
+            if (args.blending && args.blending.dst) this.blending.dst = args.blending.dst;
         }
     }, {
         key: '_createShader',
@@ -103,6 +109,8 @@ var FraGL = function () {
             var nh = this._nextPow2(h);
 
             if (nw == w && nh == h) return image;
+
+            console.log('resize');
 
             if (!this._imageCanvas) {
                 this._imageCanvas = document.createElement('canvas');
@@ -491,14 +499,18 @@ var _initialiseProps = function _initialiseProps() {
     this._imageCanvas = null;
     this._imageCtx = null;
     this.trasparent = true;
-    this.premultipliedAlpha = false;
+    this.premultipliedAlpha = true;
     this.antialias = false;
     this.depth = false;
+    this.blending = {
+        src: 'SRC_ALPHA',
+        dst: 'ONE_MINUS_SRC_ALPHA'
+    };
 
     this.clear = function () {
         var gl = _this.gl;
 
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     };
 };
 

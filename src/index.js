@@ -13,9 +13,13 @@ class FraGL{
     _imageCanvas = null;
     _imageCtx = null;
     trasparent = true;
-    premultipliedAlpha = false;
+    premultipliedAlpha = true;
     antialias = false;
     depth = false;
+    blending = {
+        src:'SRC_ALPHA',
+        dst:'ONE_MINUS_SRC_ALPHA'
+    }
 
     constructor(args = {}){
         this._setArgs(args)
@@ -25,7 +29,7 @@ class FraGL{
             premultipliedAlpha: this.premultipliedAlpha,
             alpha:this.trasparent,
             antialias: this.antialias,
-            depth: this.depth
+            depth: this.depth,
         });
 
         this._resize();
@@ -33,8 +37,13 @@ class FraGL{
         const { gl } = this;
 
         gl.clearColor(...this._clearColor);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+        this.clear();
+
         gl.enable(gl.BLEND);
+        gl.colorMask(1, 1, 1, 1);
+        gl.blendFunc(gl[this.blending.src], gl[this.blending.dst])
+
     }
 
     _setArgs(args){
@@ -51,6 +60,8 @@ class FraGL{
         if(args.premultipliedAlpha) this.premultipliedAlpha = args.premultipliedAlpha;
         if(args.antialias)  this.antialias = args.antialias
         if(args.depth) this.depth = args.depth
+        if(args.blending && args.blending.src) this.blending.src = args.blending.src;
+        if(args.blending && args.blending.dst) this.blending.dst = args.blending.dst;
     }
 
     _createShader(content, type){
@@ -95,6 +106,8 @@ class FraGL{
         const nh = this._nextPow2(h);
 
         if(nw == w && nh == h) return image;
+
+        console.log('resize');
 
         if(!this._imageCanvas) {
             this._imageCanvas = document.createElement('canvas');
@@ -249,7 +262,7 @@ class FraGL{
 
     clear = () =>{
         const { gl } = this;
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     }
 
     // render = () =>{
