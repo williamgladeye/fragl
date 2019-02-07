@@ -128,6 +128,7 @@ class FraGL{
         const _scope = this;
         return new Promise( resolve =>{
             let image = new Image();
+            image.crossOrigin = "anonymous";
             image.addEventListener('load', function(){
                 image = _scope._checkSize(image);
                 resolve(image);
