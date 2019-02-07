@@ -136,6 +136,7 @@
                 var _scope = this;
                 return new Promise(function (resolve) {
                     var image = new Image();
+                    image.crossOrigin = "anonymous";
                     image.addEventListener('load', function () {
                         image = _scope._checkSize(image);
                         resolve(image);
