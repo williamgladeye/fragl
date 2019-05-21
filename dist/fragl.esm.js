@@ -18,12 +18,18 @@ var FraGL = function () {
 
         this._setArgs(args);
 
-        this.domElement = args.canvas || document.createElement('canvas');        this.gl = this.domElement.getContext("webgl", {
+        this.domElement = args.canvas || document.createElement('canvas');
+
+        var opts = {
             premultipliedAlpha: this.premultipliedAlpha,
             alpha: this.trasparent,
             antialias: this.antialias,
             depth: this.depth
-        });
+        };
+
+        this.gl = this.domElement.getContext("webgl", opts) || this.domElement.getContext("experimental-webgl");
+
+        if (!gl || !(gl instanceof WebGLRenderingContext)) return null;
 
         this._resize();
 
